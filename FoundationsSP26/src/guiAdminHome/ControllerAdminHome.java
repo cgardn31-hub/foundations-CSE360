@@ -142,12 +142,27 @@ public class ControllerAdminHome {
 	 * <p> Description: Protected method that is currently a stub informing the user that
 	 * this function has not yet been implemented. </p>
 	 */
-	protected static void listUsers() {
-		System.out.println("\n*** WARNING ***: List Users Not Yet Implemented");
-		ViewAdminHome.alertNotImplemented.setTitle("*** WARNING ***");
-		ViewAdminHome.alertNotImplemented.setHeaderText("List User Issue");
-		ViewAdminHome.alertNotImplemented.setContentText("List Users Not Yet Implemented");
-		ViewAdminHome.alertNotImplemented.showAndWait();
+	protected static void listUsers() {		
+
+	    List<String> users = theDatabase.getUserList();
+
+	    if (users == null || users.size() <= 1) { // size<=1 because "<Select a User>" is always added
+	        ViewAdminHome.alertNotImplemented.setTitle("List Users");
+	        ViewAdminHome.alertNotImplemented.setHeaderText("No Users Found");
+	        ViewAdminHome.alertNotImplemented.setContentText("There are currently no users in the system.");
+	        ViewAdminHome.alertNotImplemented.showAndWait();
+	        return;
+	    }
+
+	    StringBuilder sb = new StringBuilder();
+	    for (int i = 1; i < users.size(); i++) {   // start at 1 to skip "<Select a User>"
+	        sb.append(users.get(i)).append("\n");
+	    }
+
+	    ViewAdminHome.alertNotImplemented.setTitle("List Users");
+	    ViewAdminHome.alertNotImplemented.setHeaderText("Registered Usernames");
+	    ViewAdminHome.alertNotImplemented.setContentText(sb.toString());
+	    ViewAdminHome.alertNotImplemented.showAndWait();
 	}
 	
 	/**********
