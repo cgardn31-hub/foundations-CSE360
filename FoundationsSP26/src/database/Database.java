@@ -1061,4 +1061,44 @@ public class Database {
 			se.printStackTrace(); 
 		} 
 	}
+
+	public String listUsersDetails() {		//Retrieves all currently registered user details from the database and returns them.
+
+	    StringBuilder sb = new StringBuilder();
+
+	    String query = "SELECT userName, firstName, lastName, emailAddress, " +
+	                   "adminRole, newRole1, newRole2 FROM userDB";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        ResultSet rs = pstmt.executeQuery();
+
+	        while (rs.next()) {
+	            String username = rs.getString("userName");
+	            String firstName = rs.getString("firstName");
+	            String lastName = rs.getString("lastName");
+	            String email = rs.getString("emailAddress");
+
+	            boolean admin = rs.getBoolean("adminRole");
+	            boolean role1 = rs.getBoolean("newRole1");
+	            boolean role2 = rs.getBoolean("newRole2");
+
+	            sb.append("Username: ").append(username).append("\n")
+	              .append("Name: ").append(firstName).append(" ").append(lastName).append("\n")
+	              .append("Email: ").append(email).append("\n")
+	              .append("Roles: ");
+
+	            boolean hasRole = false;
+	            if (admin) { sb.append("Admin "); hasRole = true; }
+	            if (role1) { sb.append("Role1 "); hasRole = true; }
+	            if (role2) { sb.append("Role2 "); hasRole = true; }
+	            if (!hasRole) sb.append("None");
+
+	            sb.append("\n-------------------------\n");
+	        }
+	    } catch (SQLException e) {
+	        return "Error retrieving user list.";
+	    }
+
+	    return sb.toString();
+	}
 }
