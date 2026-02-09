@@ -127,12 +127,94 @@ public class ControllerAdminHome {
 	 * this function has not yet been implemented. </p>
 	 */
 	protected static void deleteUser() {
-		System.out.println("\n*** WARNING ***: Delete User Not Yet Implemented");
-		ViewAdminHome.alertNotImplemented.setTitle("*** WARNING ***");
-		ViewAdminHome.alertNotImplemented.setHeaderText("Delete User Issue");
-		ViewAdminHome.alertNotImplemented.setContentText("Delete User Not Yet Implemented");
-		ViewAdminHome.alertNotImplemented.showAndWait();
-	}
+
+		    // Defensive check: only admins should be here
+		    if (ViewAdminHome.theUser == null || !ViewAdminHome.theUser.getAdminRole()) {
+		        ViewAdminHome.alertNotImplemented.setTitle("*** WARNING ***");
+		        ViewAdminHome.alertNotImplemented.setHeaderText("Delete User Issue");
+		        ViewAdminHome.alertNotImplemented.setContentText("Only an admin can delete users.");
+		        ViewAdminHome.alertNotImplemented.showAndWait();
+		        return;
+		    }
+
+		    // 1) Ask for username (dialog)
+		    TextInputDialog input = new TextInputDialog();
+		    input.setTitle("Delete a User");
+		    input.setHeaderText("Enter the username to remove access");
+		    input.setContentText("Username:");
+
+		    Optional<String> entered = input.showAndWait();
+		    if (entered.isEmpty()) return; // user cancelled
+
+		    String targetUsername = entered.get().trim();
+		    if (targetUsername.isEmpty()) {
+		        Alert a = new Alert(AlertType.INFORMATION);
+		        a.setTitle("Delete a User");
+		        a.setHeaderText("Delete User Issue");
+		        a.setContentText("You must enter a username.");
+		        a.showAndWait();
+		        return;
+		    }
+
+		    // 2) Admin cannot delete themself
+		    String currentAdminUsername = ViewAdminHome.theUser.getUserName();
+		    if (targetUsername.equalsIgnoreCase(currentAdminUsername)) {
+		        Alert a = new Alert(AlertType.INFORMATION);
+		        a.setTitle("Delete a User");
+		        a.setHeaderText("Not Allowed");
+		        a.setContentText("An admin is not allowed to remove that admin’s access.");
+		        a.showAndWait();
+		        return;
+		    }
+
+		    // 3) Must exist
+		    if (!theDatabase.doesUserExist(targetUsername)) {
+		        Alert a = new Alert(AlertType.INFORMATION);
+		        a.setTitle("Delete a User");
+		        a.setHeaderText("User Not Found");
+		        a.setContentText("No user account exists with username: " + targetUsername);
+		        a.showAndWait();
+		        return;
+		    }
+
+		    // 4) Confirmation: must answer "Yes"
+		    Alert confirm = new Alert(AlertType.CONFIRMATION);
+		    confirm.setTitle("Delete a User");
+		    confirm.setHeaderText("Are you sure?");
+		    confirm.setContentText("Remove access for user '" + targetUsername + "'?\n\n"
+		            + "Click Yes to remove access.");
+
+		    confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+
+		    Optional<ButtonType> choice = confirm.showAndWait();
+		    if (choice.isEmpty() || choice.get() != ButtonType.YES) return;
+
+		    // 5) Remove access in DB
+
+
+		    //  HARD DELETE:
+		    boolean ok = theDatabase.deleteUserAccount(targetUsername);
+
+		   
+
+		    // 6) Result + update UI counts
+		    Alert result = new Alert(AlertType.INFORMATION);
+		    result.setTitle("Delete a User");
+
+		    if (!ok) {
+		        result.setHeaderText("Delete Failed");
+		        result.setContentText("Unable to remove access for '" + targetUsername + "'.");
+		        result.showAndWait();
+		        return;
+		    }
+
+		    // Update the count label
+		    ViewAdminHome.label_NumberOfUsers.setText("Number of users: " + theDatabase.getNumberOfUsers());
+
+		    result.setHeaderText("User Removed");
+		    result.setContentText("Access removed for user '" + targetUsername + "'.");
+		    result.showAndWait();
+		}
 	
 	/**********
 	 * <p> 
