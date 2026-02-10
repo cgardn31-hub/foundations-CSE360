@@ -595,7 +595,10 @@ public class Database {
 	        e.printStackTrace();
 	    }
 	}
-
+/*
+	This is for the function of allowing the user to update thee password 
+	This is used after the user logs in. 
+*/
 	public boolean updatePassword(String username, String newPassword) {
 
 	    String sql = "UPDATE userDB SET password = ? WHERE userName = ?";
@@ -1037,11 +1040,11 @@ public class Database {
 	 *  
 	 */
 	public boolean getCurrentNewRole2() { return currentNewRole2;};
-
+// The string to get the input of the One time password that
 	public String getCurrentOneTimePassword() {
 		return currentOneTimePassword;
 	}
-
+// This checks if the user exist and if the usernames match. 
 	public boolean userExists(String username) {
 		String query = "SELECT 1 FROM userDB WHERE userName = ?";
 		PreparedStatement statement = null;
@@ -1061,7 +1064,7 @@ public class Database {
 		return false;
 	}
 /*
-	
+	This allowed the GUI to set a one time password that the user can use. 
 */
 	public boolean setOnetimePassword(String username, String Otp) {
 		String sql = "Update userDB SET oneTimePassword = ? WHERE userName = ?";
@@ -1081,7 +1084,7 @@ public class Database {
 		}
 	}
 /*
-
+	This clears the temporary password after it has been used
 */
 	public void clearOneTimePassword(String username) {
 
