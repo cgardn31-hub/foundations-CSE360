@@ -2,7 +2,8 @@ package guiUserUpdate;
 
 import entityClasses.User;
 import javafx.stage.Stage;
-
+import javafx.scene.control.Alert;
+import javafx.scene.control.TextInputDialog;
 public class ControllerUserUpdate {
 	/*-********************************************************************************************
 
