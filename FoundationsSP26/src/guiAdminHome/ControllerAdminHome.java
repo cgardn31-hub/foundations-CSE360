@@ -118,11 +118,58 @@ public class ControllerAdminHome {
 	 * this function has not yet been implemented. </p>
 	 */
 	protected static void setOnetimePassword () {
-		System.out.println("\n*** WARNING ***: One-Time Password Not Yet Implemented");
-		ViewAdminHome.alertNotImplemented.setTitle("*** WARNING ***");
-		ViewAdminHome.alertNotImplemented.setHeaderText("One-Time Password Issue");
-		ViewAdminHome.alertNotImplemented.setContentText("One-Time Password Not Yet Implemented");
-		ViewAdminHome.alertNotImplemented.showAndWait();
+		 TextInputDialog dialog = new TextInputDialog();
+		dialog.setTitle("Recover Password");
+		dialog.setHeaderText("Create One-time Password");
+		dialog.setContentText("Enter Username: ");
+		
+		var result = dialog.showAndWait();
+		if(result.isEmpty()) {
+			return;
+		}
+		
+		String username = result.get().trim();
+		
+		if(username.isEmpty()) {
+			Alert err = new Alert(Alert.AlertType.ERROR);
+			err.setHeaderText("Username must be entered");
+			err.showAndWait();
+			return;
+			
+		}
+		
+		if(!theDatabase.userExists(username)) {
+			Alert err = new Alert(Alert.AlertType.ERROR);
+			err.setHeaderText("Username not found. ");
+			err.setContentText("No username name exists");
+			err.showAndWait();
+			return;
+						
+		}
+		String Otp = generateOtp(8);
+		
+		theDatabase.setOnetimePassword(username, Otp);
+		Alert info = new Alert(Alert.AlertType.INFORMATION);
+		info.setTitle("One-Time Password Created");
+		info.setHeaderText("Temporary Password");
+		info.setContentText("Temporary Password: "+ Otp +
+				"\n\n The user must login using this temporary password once and then create a new password.");
+		info.showAndWait();
+	}
+	
+	
+			// This is my helper function that allows the password to be randomly generated. 
+	private static String generateOtp(int length) {
+			String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+			Random generator = new Random ();
+			StringBuilder sb = new StringBuilder();
+			
+			for(int i = 0; i < length; i++) {
+				
+				sb.append(chars.charAt(generator.nextInt(chars.length())));
+				
+			}
+			return sb.toString();
 	}
 	
 	/**********
