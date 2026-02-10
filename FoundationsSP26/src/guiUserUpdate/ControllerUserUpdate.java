@@ -62,4 +62,30 @@ public class ControllerUserUpdate {
 			System.exit(0);
 		}
  	}
+	public static void doUpdatePassword(Stage theStage, User theUser) {
+		 TextInputDialog dialog = new TextInputDialog();
+	        dialog.setTitle("Update Password");
+	        dialog.setHeaderText("Enter a new password");
+	        dialog.setContentText("New password:");
+
+	        var result = dialog.showAndWait();
+	        if (result.isEmpty()) return;
+
+	        String newPassword = result.get().trim();
+	        if (newPassword.isEmpty()) return;
+
+	        applicationMain.FoundationsMain.database.updatePassword(
+	                theUser.getUserName(), newPassword);
+
+	        // Clear one-time password after successful update
+	        applicationMain.FoundationsMain.database
+	                .clearOneTimePassword(theUser.getUserName());
+
+	        Alert info = new Alert(Alert.AlertType.INFORMATION);
+	        info.setContentText("Password updated. Please log in again.");
+	        info.showAndWait();
+	        guiUserLogin.ViewUserLogin.displayUserLogin(theStage);
+	}
+}
+
 }
