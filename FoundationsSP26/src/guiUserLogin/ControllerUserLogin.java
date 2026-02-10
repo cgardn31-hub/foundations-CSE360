@@ -80,16 +80,35 @@ public class ControllerUserLogin {
 		// System.out.println("*** Username is valid");
 		
 		// Check to see that the login password matches the account password
-    	String actualPassword = theDatabase.getCurrentPassword();
-    	
-    	if (password.compareTo(actualPassword) != 0) {
-    		ViewUserLogin.alertUsernamePasswordError.setContentText(
-    				"Incorrect username/password. Try again!");
-    		ViewUserLogin.alertUsernamePasswordError.showAndWait();
-    		return;
-    	}
+    
 		// System.out.println("*** Password is valid for this user");
-		
+		String actualPassword = theDatabase.getCurrentPassword();
+    	// Establish this user's details
+    	
+    	if (!password.equals(actualPassword)) {
+    		String oneTime = theDatabase.getCurrentOneTimePassword();
+    		
+    		if(oneTime != null && password.equals(oneTime)) {
+    			//
+    			theDatabase.clearOneTimePassword(username);
+    			
+    			guiUserUpdate.ControllerUserUpdate.requireReloginAfterUpdate();
+    			
+    			User user = new User(username, password, theDatabase.getCurrentFirstName(), 
+    	    			theDatabase.getCurrentMiddleName(), theDatabase.getCurrentLastName(), 
+    	    			theDatabase.getCurrentPreferredFirstName(), theDatabase.getCurrentEmailAddress(), 
+    	    			theDatabase.getCurrentAdminRole(), 
+    	    			theDatabase.getCurrentNewRole1(), theDatabase.getCurrentNewRole2()); 
+    			// 
+    			guiUserUpdate.ViewUserUpdate.displayUserUpdate(theStage, user);
+    			
+    			return;
+    		}
+    		ViewUserLogin.alertUsernamePasswordError.setContentText(
+    				"Username/Passwprd Incorrect. Try again.");
+    		ViewUserLogin.alertUsernamePasswordError.showAndWait();
+    			return;
+    	}
 		// Establish this user's details
     	User user = new User(username, password, theDatabase.getCurrentFirstName(), 
     			theDatabase.getCurrentMiddleName(), theDatabase.getCurrentLastName(), 
