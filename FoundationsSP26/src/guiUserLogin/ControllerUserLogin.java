@@ -81,10 +81,10 @@ public class ControllerUserLogin {
 		
 		// Check to see that the login password matches the account password
     
-		// System.out.println("*** Password is valid for this user");
+	
 		String actualPassword = theDatabase.getCurrentPassword();
     	// Establish this user's details
-    	
+    	// If the password does not match the permanent
     	if (!password.equals(actualPassword)) {
     		String oneTime = theDatabase.getCurrentOneTimePassword();
     		
