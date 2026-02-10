@@ -57,6 +57,7 @@ public class Database {
 	private String currentLastName;
 	private String currentPreferredFirstName;
 	private String currentEmailAddress;
+	private String currentOneTimePassword;
 	private boolean currentAdminRole;
 	private boolean currentNewRole1;
 	private boolean currentNewRole2;
@@ -595,7 +596,28 @@ public class Database {
 	    }
 	}
 
-	
+	public boolean updatePassword(String username, String newPassword) {
+
+	    String sql = "UPDATE userDB SET password = ? WHERE userName = ?";
+
+	    try (PreparedStatement statement = connection.prepareStatement(sql)) {
+	        statement.setString(1, newPassword);
+	        statement.setString(2, username);
+
+	        int rows = statement.executeUpdate();
+
+	        // keep the in-memory "current" password in sync (you already do this for names)
+	        if (rows == 1) {
+	            currentPassword = newPassword;
+	            return true;
+	        }
+	        return false;
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
 	/*******
 	 * <p> Method: String getMiddleName(String username) </p>
 	 * 
@@ -1016,7 +1038,64 @@ public class Database {
 	 */
 	public boolean getCurrentNewRole2() { return currentNewRole2;};
 
+	public String getCurrentOneTimePassword() {
+		return currentOneTimePassword;
+	}
+
+	public boolean userExists(String username) {
+		String query = "SELECT 1 FROM userDB WHERE userName = ?";
+		PreparedStatement statement = null;
+		ResultSet rs = null;
+		try {
+			statement = connection.prepareStatement(query);
+			statement.setString(1, username);
+
+			rs = statement.executeQuery();
+
+			if (rs.next()) {
+				return true;
+			}
+		} catch (SQLException e) {
+
+		}
+		return false;
+	}
+/*
 	
+*/
+	public boolean setOnetimePassword(String username, String Otp) {
+		String sql = "Update userDB SET oneTimePassword = ? WHERE userName = ?";
+		PreparedStatement statement = null;
+
+		try {
+			statement = connection.prepareStatement(sql);
+			statement.setString(1, Otp);
+			statement.setString(2, username);
+			
+			return statement.executeUpdate() == 1;
+
+		
+		} catch (SQLException e) {
+
+			return false;
+		}
+	}
+/*
+
+*/
+	public void clearOneTimePassword(String username) {
+
+		String sql = "Update userDB SET oneTimePassword = NULL WHERE userName = ?";
+		PreparedStatement statement = null;
+
+		try {
+			statement = connection.prepareStatement(sql);
+			statement.setString(1, username);
+			statement.executeUpdate();
+		} catch (SQLException e) {
+
+		}
+	}
 	/*******
 	 * <p> Debugging method</p>
 	 * 
@@ -1026,6 +1105,7 @@ public class Database {
 	 * 
 	 */
 	// Dumps the database.
+	
 	public void dump() throws SQLException {
 		String query = "SELECT * FROM userDB";
 		ResultSet resultSet = statement.executeQuery(query);
