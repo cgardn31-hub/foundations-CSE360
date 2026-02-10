@@ -35,6 +35,11 @@ public class ControllerUserUpdate {
 	 * 
 	 * @param theUser specifies the user so we go to the right page and so the right information
 	 */
+	private static boolean forceRelogin = false;
+	
+	public static void requireReloginAfterUpdate() {
+		forceRelogin = true;
+	}
 	protected static void goToUserHomePage(Stage theStage, User theUser) {
 		
 		// Get the roles the user selected during login
