@@ -105,7 +105,7 @@ public class ControllerUserLogin {
     			return;
     		}
     		ViewUserLogin.alertUsernamePasswordError.setContentText(
-    				"Username/Passwprd Incorrect. Try again.");
+    				"Username/Password Incorrect. Try again.");
     		ViewUserLogin.alertUsernamePasswordError.showAndWait();
     			return;
     	}
