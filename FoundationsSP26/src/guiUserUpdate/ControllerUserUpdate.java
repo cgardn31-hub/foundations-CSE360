@@ -42,7 +42,13 @@ public class ControllerUserUpdate {
 		forceRelogin = true;
 	}
 	protected static void goToUserHomePage(Stage theStage, User theUser) {
-		
+		// If the system is flaggged after resetting password, the user must re-login
+		if(forceRelogin) {
+			forceRelogin = false; 
+			// Displays the User Login Page again.
+			guiUserLogin.ViewUserLogin.displayUserLogin(theStage);
+			return;
+		}
 		// Get the roles the user selected during login
 		int theRole = applicationMain.FoundationsMain.activeHomePage;
 
@@ -63,6 +69,11 @@ public class ControllerUserUpdate {
 			System.exit(0);
 		}
  	}
+
+	/*
+	It prompts the user to update their password. After it was sucessfully updated
+	the One-time password is cleared and user logs back in. 
+	*/
 	public static void doUpdatePassword(Stage theStage, User theUser) {
 		 TextInputDialog dialog = new TextInputDialog();
 	        dialog.setTitle("Update Password");
